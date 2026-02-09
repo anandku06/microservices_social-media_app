@@ -3,6 +3,7 @@ const multer = require("multer");
 const logger = require("../utils/logger");
 const { authenticateRequest } = require("../middlewares/authMiddleware");
 const { uploadMedia } = require("../controllers/mediaController");
+const sensitiveEndpointLimiter = require("../middlewares/sensitiveRateLimiter");
 
 const router = express.Router();
 
@@ -17,6 +18,7 @@ const upload = multer({
 router.post(
   "/upload",
   authenticateRequest,
+  sensitiveEndpointLimiter,
   (req, res, next) => {
     upload(req, res, (err) => {
       if (err instanceof multer.MulterError) {
