@@ -37,7 +37,7 @@ app.use(errorHandler);
 
 app.listen(PORT, async () => {
   await connectDB();
-  logger.info(`Identity Service running on port ${PORT}`);
+  logger.info(`Post Service running on port ${PORT}`);
 });
 
 // unhandled promise rejections
