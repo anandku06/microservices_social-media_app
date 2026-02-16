@@ -6,6 +6,7 @@ const uploadMedia = async (req, res) => {
   logger.info("Uploading the media!!");
 
   try {
+    // console.log(req.file);
     if (!req.file) {
       logger.error("File not found!!");
       return res.status(400).json({
@@ -14,11 +15,11 @@ const uploadMedia = async (req, res) => {
       });
     }
 
-    const { orgName, mimeType, buffer } = req.file;
+    const { originalname, mimetype, buffer } = req.file;
     const userId = req.user.userId;
 
-    logger.info(`File Details:\n Name: ${orgName} ; Type : ${mimeType}`);
     logger.info("Uploading to Cloudinary!");
+    logger.info(`File Details:\n Name: ${originalname} ; Type : ${mimetype}`);
 
     const cloudinaryUploadResult = await uploadMediaToCloudinary(req.file);
     logger.info(
@@ -27,8 +28,8 @@ const uploadMedia = async (req, res) => {
 
     const newlyCreatedMedia = new Media({
       publicId: cloudinaryUploadResult.public_id,
-      originalName: orgName,
-      mimeType,
+      originalName: originalname,
+      mimeType : mimetype,
       url: cloudinaryUploadResult.secure_url,
       userId,
     });
