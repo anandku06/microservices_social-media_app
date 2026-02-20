@@ -34,6 +34,7 @@ const uploadMedia = async (req, res) => {
       userId,
     });
     await newlyCreatedMedia.save();
+    // console.log(cloudinaryUploadResult)
 
     res.status(201).json({
       success: true,
@@ -42,7 +43,7 @@ const uploadMedia = async (req, res) => {
       message: "Media upload is successfull",
     });
   } catch (error) {
-    logger.error("Error while uploading the media!");
+    logger.error("Error while uploading the media!", error);
     res.status(500).json({
       success: false,
       message: "Something went wrong!",
