@@ -7,6 +7,7 @@ const errorHandler = require("./middlewares/errorHandler");
 const logger = require("./utils/logger");
 const postRoutes = require("./routes/post-routes");
 const connectDB = require("./utils/db");
+const { connectToRabbitMQ } = require("./utils/rabbitmq");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -35,10 +36,20 @@ app.use(
 
 app.use(errorHandler);
 
-app.listen(PORT, async () => {
-  await connectDB();
-  logger.info(`Post Service running on port ${PORT}`);
-});
+async function startServer() {
+  try {
+    await connectToRabbitMQ();
+    app.listen(PORT, async () => {
+      await connectDB();
+      logger.info(`Post Service running on port ${PORT}`);
+    });
+  } catch (e) {
+    logger.error(`Failed to connect to the server`, e);
+    process.exit(1);
+  }
+}
+
+startServer();
 
 // unhandled promise rejections
 process.on("unhandledRejection", (reason, promise) => {
