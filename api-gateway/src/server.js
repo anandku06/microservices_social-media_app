@@ -16,9 +16,9 @@ const PORT = process.env.PORT;
 
 const redisClient = new Redis(process.env.REDIS_URL);
 
-app.use(express.json());
 app.use(helmet());
 app.use(cors());
+// app.use(express.json()); // because we are proxying the request body as a stream, we should not use express.json() middleware
 
 const ratelimit = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -109,7 +109,8 @@ app.use(
     proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
       proxyReqOpts.headers["x-user-id"] = srcReq.user.userId;
 
-      if (!srcReq.headers["content-type"].startsWith("multipart/form-data")) {
+      // if the content-type header is not set and the body is present, set it to application/json
+      if (srcReq.headers["content-type"] && !srcReq.headers["content-type"].startsWith("multipart/form-data")) {
         proxyReqOpts.headers["content-type"] = "application/json";
       }
 
