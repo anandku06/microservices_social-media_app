@@ -29,7 +29,7 @@ const uploadMedia = async (req, res) => {
     const newlyCreatedMedia = new Media({
       publicId: cloudinaryUploadResult.public_id,
       originalName: originalname,
-      mimeType : mimetype,
+      mimeType: mimetype,
       url: cloudinaryUploadResult.secure_url,
       userId,
     });
@@ -46,9 +46,31 @@ const uploadMedia = async (req, res) => {
     logger.error("Error while uploading the media!", error);
     res.status(500).json({
       success: false,
-      message: "Something went wrong!",
+      message: "Error while uploading the media!",
     });
   }
 };
 
-module.exports = { uploadMedia };
+const getAllMedias = async (req, res) => {
+  try {
+    const result = await Media.find({ userId: req.user.userId });
+
+    if (result.length === 0) {
+      logger.info("No media found for the user!");
+      return res.status(404).json({
+        success: false,
+        message: "No media found for the user!",
+      });
+    }
+
+    res.json({ result });
+  } catch (error) {
+    logger.error("Error while fetching the media!", error);
+    res.status(500).json({
+      success: false,
+      message: "Error while fetching the media!",
+    });
+  }
+};
+
+module.exports = { uploadMedia, getAllMedias };
