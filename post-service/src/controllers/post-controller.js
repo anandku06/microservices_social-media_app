@@ -1,5 +1,6 @@
 const Post = require("../models/Post");
 const logger = require("../utils/logger");
+const { publishEvent } = require("../utils/rabbitmq");
 const { validatePost } = require("../utils/validation");
 
 const invalidatePostsCache = async (req, input) => {
@@ -132,6 +133,14 @@ const deletePost = async (req, res) => {
         message: "Post not found!!!",
       });
     }
+
+    // publish an event to RabbitMQ that a post has been deleted, so that other services can react to this event if needed
+    // gave the routing key as "post.deleted" and sent the postId, userId and mediaIds as event data, which can be used by other services to perform necessary actions like deleting associated media, updating search index, etc.
+    await publishEvent("post.deleted", {
+      postId: post._id.toString(),
+      userId: req.user.userId,
+      mediaIds: post.mediaIds,
+    });
 
     await invalidatePostsCache(req, req.params.id);
     res.json({
