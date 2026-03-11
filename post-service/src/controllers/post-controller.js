@@ -34,6 +34,15 @@ const createPost = async (req, res) => {
     });
 
     await newPost.save();
+
+    // publish an event to RabbitMQ for search service to index the new post, so that it can be searched by users.
+    await publishEvent("post.created", {
+      postId: newPost._id.toString(),
+      userId: newPost.user.toString(),
+      content: newPost.content,
+      createdAt: newPost.createdAt,
+    });
+
     await invalidatePostsCache(req, newPost._id.toString());
 
     logger.info("Post created successfully!");
