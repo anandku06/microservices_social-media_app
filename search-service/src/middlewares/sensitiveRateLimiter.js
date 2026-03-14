@@ -8,7 +8,7 @@ const redisClient = new Redis(process.env.REDIS_URL);
 
 const sensitiveEndpointLimiter = rateLimit({
   windowMs: 60 * 1000,
-  max: 15,
+  max: 150,
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
