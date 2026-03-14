@@ -110,7 +110,10 @@ app.use(
       proxyReqOpts.headers["x-user-id"] = srcReq.user.userId;
 
       // if the content-type header is not set and the body is present, set it to application/json
-      if (srcReq.headers["content-type"] && !srcReq.headers["content-type"].startsWith("multipart/form-data")) {
+      if (
+        srcReq.headers["content-type"] &&
+        !srcReq.headers["content-type"].startsWith("multipart/form-data")
+      ) {
         proxyReqOpts.headers["content-type"] = "application/json";
       }
 
@@ -125,6 +128,25 @@ app.use(
   }),
 );
 
+// setting up proxy for search-service
+app.use(
+  "/v1/search",
+  validateToken,
+  proxy(process.env.SEARCH_SERVICE_URL, {
+    ...proxyOptions,
+    proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+      proxyReqOpts.headers["content-type"] = "application/json";
+      proxyReqOpts.headers["x-user-id"] = srcReq.user.userId;
+
+      return proxyReqOpts;
+    },
+    userResDecorator: (proxyRes, proxyResData, userReq, userRes) => {
+      logger.info(`Response from Search Service: ${proxyRes.statusCode}`);
+      return proxyResData;
+    },
+  }),
+);
+
 app.use(errorHandler);
 
 app.listen(PORT, () => {
@@ -134,5 +156,6 @@ app.listen(PORT, () => {
   );
   logger.info(`Post Service running on ${process.env.POST_SERVICE_URL}`);
   logger.info(`Media Service running on ${process.env.MEDIA_SERVICE_URL}`);
+  logger.info(`Search Service running on ${process.env.SEARCH_SERVICE_URL}`);
   logger.info(`Redis running on ${process.env.REDIS_URL}`);
 });
