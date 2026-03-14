@@ -7,6 +7,14 @@ const searchedPostController = async (req, res) => {
   try {
     const { query } = req.query;
 
+    const cacheKey = `search:${query.trim().toLowerCase()}`;
+    const cachedResults = await req.redisClient.get(cacheKey);
+
+    if (cachedResults) {
+      logger.info("Search results found in cache");
+      return res.json(JSON.parse(cachedResults));
+    }
+
     const results = await SearchPost.find(
       {
         $text: { $search: query },
@@ -14,9 +22,9 @@ const searchedPostController = async (req, res) => {
       {
         score: { $meta: "textScore" },
       },
-    )
-      .sort({ score: { $meta: "textScore" } })
-      .limit(10);
+    ).sort({ score: { $meta: "textScore" } });
+
+    await req.redisClient.setex(cacheKey, 300, JSON.stringify(results));
 
     res.json(results);
   } catch (e) {

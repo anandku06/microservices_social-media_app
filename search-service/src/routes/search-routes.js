@@ -5,9 +5,9 @@ const sensitiveEndpointLimiter = require("../middlewares/sensitiveRateLimiter");
 
 const router = express.Router();
 
-router.use(authenticateRequest, sensitiveEndpointLimiter);
+router.use(authenticateRequest);
 
 
-router.get("/posts", searchedPostController)
+router.get("/posts", searchedPostController, sensitiveEndpointLimiter);
 
 module.exports = router
