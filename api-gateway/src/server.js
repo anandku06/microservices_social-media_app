@@ -22,7 +22,7 @@ app.use(cors());
 
 const ratelimit = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 15,
+  max: 150,
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
