@@ -11,7 +11,7 @@ const errorHandler = require("./middlewares/errorHandler");
 require("dotenv").config();
 
 const PORT = process.env.PORT;
-const redisUrl = process.env.REDIS_CLIENT;
+const redisUrl = process.env.REDIS_URL;
 const redisClient = new Redis(redisUrl);
 
 const app = express();

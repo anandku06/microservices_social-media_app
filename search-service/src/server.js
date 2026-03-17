@@ -13,7 +13,7 @@ const {
   handlePostDeleted,
 } = require("./eventHandlers/searchEventHandler");
 
-const redisClient = new Redis(process.env.REDIS_CLIENT);
+const redisClient = new Redis(process.env.REDIS_URL);
 const app = express();
 const PORT = process.env.PORT;
 

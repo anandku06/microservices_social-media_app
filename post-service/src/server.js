@@ -12,7 +12,7 @@ const { connectToRabbitMQ } = require("./utils/rabbitmq");
 const app = express();
 const PORT = process.env.PORT;
 
-const redisClient = new Redis(process.env.REDIS_CLIENT);
+const redisClient = new Redis(process.env.REDIS_URL);
 
 app.use(express.json());
 app.use(helmet());
