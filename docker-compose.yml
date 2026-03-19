@@ -26,9 +26,10 @@ services:
     env_file:
       - ./post-service/.env
     depends_on:
-      - redis
-      - rabbitmq:
-        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+          condition: service_healthy
     environment:
       - REDIS_URL=redis://redis:6379
       - RABBITMQ_URL=amqp://rabbitmq:5672
@@ -38,9 +39,10 @@ services:
     env_file:
       - ./media-service/.env
     depends_on:
-      - redis
-      - rabbitmq:
-        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+          condition: service_healthy
     environment:
       - REDIS_URL=redis://redis:6379
       - RABBITMQ_URL=amqp://rabbitmq:5672
@@ -50,9 +52,10 @@ services:
     env_file:
       - ./search-service/.env
     depends_on:
-      - redis
-      - rabbitmq:
-        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+          condition: service_healthy
     environment:
       - REDIS_URL=redis://redis:6379
       - RABBITMQ_URL=amqp://rabbitmq:5672
